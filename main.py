@@ -2,34 +2,40 @@ import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 
-class Button_Entry():
+class Win_Table():
     def __init__(self,window):
         self.Label_1 = tk.Label(window,text='Ссылка',font=('Arial',14,'bold')).grid(row=0,column=0,stick='w')
         self.entry_1 = tk.Entry(window)
         self.button_1 = tk.Button(window,text='Upload')
-        self.txt = "fj"
+
         self.entry_1.grid(row=0,column=1)
         self.button_1.grid(row=1,column=0)
-        self.button_1.bind("<Button-1>",self.answer)
 
-        self.width_frame = 150
-        self.frame_add_table = tk.Frame(window, width= self.width_frame, height= 150, bg='green')
+        self.button_1.bind("<Button-1>",self.__answer)
 
-
+        self.width_frame = 200
+        self.height_frame = 300
+        self.frame_add_table = tk.Frame(window, width=self.width_frame, height=self.height_frame)
         self.frame_add_table.grid(row=3,column=0,pady=10, padx=10)
+        self.frame_add_table.propagate(0)       # размеры Frame неизменяемые, таблица не будет расширяться за пределы окна
 
-    def answer(self, event):
+    def hide_all_frames(self):          # очищает страницу перед записью новых виджетов
+        for widget in self.frame_add_table.winfo_children():
+            widget.destroy()
+
+    def __answer(self, event):
+        self.hide_all_frames()
         heads = []
         txt = self.entry_1.get()
         df = pd.read_csv(txt)
         for col in df.columns:
             heads.append(col)
 
-        table = ttk.Treeview(self.frame_add_table, show ='headings',selectmode='extended')
+        table = ttk.Treeview(self.frame_add_table, show ='headings',height=self.height_frame)
         table['columns'] = heads
         for header in heads:
             table.heading(header,text=header,anchor='center')
-            table.column(header,anchor='center',stretch=False, width=int(self.width_frame/len(heads)))
+            table.column(header,anchor='center',stretch=False)
         for row in df.values:
             row = tuple(row)
             table.insert('',tk.END, values=row)
@@ -39,9 +45,9 @@ class Button_Entry():
 
         scroll_pane_1 = tk.Scrollbar(self.frame_add_table,orient='vertical', command=table.yview)
         scroll_pane_1.pack(side=tk.RIGHT, fill=tk.Y)
-
         table.configure(xscrollcommand=scroll_pane.set, yscrollcommand=scroll_pane_1.set)
-        table.pack(fill='x')
+        table.pack(fill=tk.Y)
+                
 
         
 
@@ -55,102 +61,7 @@ def get_entry(name):
 def new_window_1():
     new_window_1 = tk.Toplevel(win)
     new_window_1.geometry('700x400+300+150')
-    # new_window_1.resizable(False,False)
-    # tk.Label(new_window_1,text='Ссылка',font=('Arial',14,'bold')).grid(row=0,column=0,stick='w')
-    # name = tk.Entry(new_window_1)
-    # tk.Button(new_window_1,text='Upload',command=lambda: get_entry(name)).grid(row=1,column=0)
-    # name.grid(row=0,column=1)
-    q = Button_Entry(new_window_1)
-
-    
-    # width_frame = 150
-    # frame_add_table = tk.Frame(new_window_1, width= width_frame, height= 150, bg='green')
-
-
-    # frame_add_table.grid(row=3,column=0,pady=10, padx=10)
-    # new_window_1.grid_columnconfigure(0, minsize=100)
-    # new_window_1.grid_columnconfigure(1, minsize=200)
-    
-
-    # canvas=tk.Canvas(
-    #     frame_add_table,
-    #     bg='#4A7A8C',
-    #     width=100,
-    #     height=200,
-    #     scrollregion=(0,0,700,700)
-    #     )
-
-    # vertibar=tk.Scrollbar(
-    #     frame_add_table,
-    #     orient=tk.VERTICAL
-    #     )
-    # vertibar.pack(side=tk.RIGHT,fill=tk.Y)
-    # vertibar.config(command=canvas.yview)
-
-    # horibar=tk.Scrollbar(
-    #     frame_add_table,
-    #     orient=tk.HORIZONTAL
-    #     )
-    # horibar.pack(side=tk.BOTTOM,fill=tk.X)
-    # horibar.config(command=canvas.xview)
-
-    # canvas.config(width=100,height=200)
-
-    # canvas.config(
-    #     xscrollcommand=horibar.set, 
-    #     yscrollcommand=vertibar.set
-    #     )
-    # canvas.pack(expand=False,side=tk.LEFT,fill=tk.BOTH)
-
-
-
-
-    # table_1 = tk.Canvas(frame_add_table, width=150,height=150,scrollregion=(0,0,150,150))
-    # scroll_pane_1 = tk.Scrollbar(frame_add_table,orient='horizontal')
-    # scroll_pane_1.pack(side=tk.BOTTOM, fill=tk.X)
-    # scroll_pane_1.config(command=table_1.xview)
-
-    # scroll_pane_2 = tk.Scrollbar(frame_add_table)
-    # scroll_pane_2.pack(side=tk.RIGHT, fill=tk.Y)
-    # scroll_pane_2.config(command=table_1.yview)
-
-    # table_1.config(width=400,height=400)
-    # table_1.config(xscrollcommand=scroll_pane_1.set, yscrollcommand=scroll_pane_2.set)
-
-    # table_1.pack(expand=True,side=tk.LEFT,fill=tk.BOTH)
-
-    # lst = [(1,'Audi','Pete',19),
-    #    (2,'BMW','Max',18),
-    #    (3,'Vw','Pete',20),
-    #    (4,'Mercedes','Kurt',21),
-    #    (5,'Audi','Pete',23),
-    #    (6,'Mercedes','Max',25),
-    #    (7,'Audi','Pete',19),
-    #    (8,'BMW','Max',20),
-    #    (9,'Mercedes','Pete',30),
-    #    (10,'BMW','Max',29),
-    #    (11,'Audi','Pete',21),
-    #    (12,'BMW','Max',18),
-    #    (13,'Audi','Pete',19),
-    #    (14,'BMW','Max',28),
-    #    (15,'BMW','Max',35)]
-
-    # heads = ['id', 'model', 'owner', 'price']
-    # table = ttk.Treeview(frame_add_table, show ='headings',selectmode='extended')
-    # table['columns'] = heads
-    # for header in heads:
-    #     table.heading(header,text=header,anchor='center')
-    #     table.column(header,anchor='center',stretch=False, width=int(width_frame/len(heads)))
-    # for row in lst:
-    #     table.insert('',tk.END, values=row)
-    # scroll_pane = tk.Scrollbar(frame_add_table,orient='horizontal', command=table.xview)
-    # scroll_pane.pack(side=tk.BOTTOM, fill=tk.X)
-
-    # scroll_pane_1 = tk.Scrollbar(frame_add_table,orient='vertical', command=table.yview)
-    # scroll_pane_1.pack(side=tk.RIGHT, fill=tk.Y)
-
-    # table.configure(xscrollcommand=scroll_pane.set, yscrollcommand=scroll_pane_1.set)
-    # table.pack(fill='x')
+    table = Win_Table(new_window_1)
 
 
 
