@@ -1,5 +1,49 @@
 import tkinter as tk
 from tkinter import ttk
+import pandas as pd
+
+class Button_Entry():
+    def __init__(self,window):
+        self.Label_1 = tk.Label(window,text='Ссылка',font=('Arial',14,'bold')).grid(row=0,column=0,stick='w')
+        self.entry_1 = tk.Entry(window)
+        self.button_1 = tk.Button(window,text='Upload')
+        self.txt = "fj"
+        self.entry_1.grid(row=0,column=1)
+        self.button_1.grid(row=1,column=0)
+        self.button_1.bind("<Button-1>",self.answer)
+
+        self.width_frame = 150
+        self.frame_add_table = tk.Frame(window, width= self.width_frame, height= 150, bg='green')
+
+
+        self.frame_add_table.grid(row=3,column=0,pady=10, padx=10)
+
+    def answer(self, event):
+        heads = []
+        txt = self.entry_1.get()
+        df = pd.read_csv(txt)
+        for col in df.columns:
+            heads.append(col)
+
+        table = ttk.Treeview(self.frame_add_table, show ='headings',selectmode='extended')
+        table['columns'] = heads
+        for header in heads:
+            table.heading(header,text=header,anchor='center')
+            table.column(header,anchor='center',stretch=False, width=int(self.width_frame/len(heads)))
+        for row in df.values:
+            row = tuple(row)
+            table.insert('',tk.END, values=row)
+
+        scroll_pane = tk.Scrollbar(self.frame_add_table,orient='horizontal', command=table.xview)
+        scroll_pane.pack(side=tk.BOTTOM, fill=tk.X)
+
+        scroll_pane_1 = tk.Scrollbar(self.frame_add_table,orient='vertical', command=table.yview)
+        scroll_pane_1.pack(side=tk.RIGHT, fill=tk.Y)
+
+        table.configure(xscrollcommand=scroll_pane.set, yscrollcommand=scroll_pane_1.set)
+        table.pack(fill='x')
+
+        
 
 def get_entry(name):
     value = name.get()
@@ -12,17 +56,20 @@ def new_window_1():
     new_window_1 = tk.Toplevel(win)
     new_window_1.geometry('700x400+300+150')
     # new_window_1.resizable(False,False)
-    tk.Label(new_window_1,text='Ссылка',font=('Arial',14,'bold')).grid(row=0,column=0,stick='w')
-    name = tk.Entry(new_window_1)
-    tk.Button(new_window_1,text='Upload',command=lambda: get_entry(name)).grid(row=1,column=0)
-    name.grid(row=0,column=1)
-    width_frame = 150
-    frame_add_table = tk.Frame(new_window_1, width= width_frame, height= 150, bg='green')
+    # tk.Label(new_window_1,text='Ссылка',font=('Arial',14,'bold')).grid(row=0,column=0,stick='w')
+    # name = tk.Entry(new_window_1)
+    # tk.Button(new_window_1,text='Upload',command=lambda: get_entry(name)).grid(row=1,column=0)
+    # name.grid(row=0,column=1)
+    q = Button_Entry(new_window_1)
+
+    
+    # width_frame = 150
+    # frame_add_table = tk.Frame(new_window_1, width= width_frame, height= 150, bg='green')
 
 
-    frame_add_table.grid(row=3,column=0,pady=10, padx=10)
-    new_window_1.grid_columnconfigure(0, minsize=100)
-    new_window_1.grid_columnconfigure(1, minsize=200)
+    # frame_add_table.grid(row=3,column=0,pady=10, padx=10)
+    # new_window_1.grid_columnconfigure(0, minsize=100)
+    # new_window_1.grid_columnconfigure(1, minsize=200)
     
 
     # canvas=tk.Canvas(
@@ -72,38 +119,38 @@ def new_window_1():
 
     # table_1.pack(expand=True,side=tk.LEFT,fill=tk.BOTH)
 
-    lst = [(1,'Audi','Pete',19),
-       (2,'BMW','Max',18),
-       (3,'Vw','Pete',20),
-       (4,'Mercedes','Kurt',21),
-       (5,'Audi','Pete',23),
-       (6,'Mercedes','Max',25),
-       (7,'Audi','Pete',19),
-       (8,'BMW','Max',20),
-       (9,'Mercedes','Pete',30),
-       (10,'BMW','Max',29),
-       (11,'Audi','Pete',21),
-       (12,'BMW','Max',18),
-       (13,'Audi','Pete',19),
-       (14,'BMW','Max',28),
-       (15,'BMW','Max',35)]
+    # lst = [(1,'Audi','Pete',19),
+    #    (2,'BMW','Max',18),
+    #    (3,'Vw','Pete',20),
+    #    (4,'Mercedes','Kurt',21),
+    #    (5,'Audi','Pete',23),
+    #    (6,'Mercedes','Max',25),
+    #    (7,'Audi','Pete',19),
+    #    (8,'BMW','Max',20),
+    #    (9,'Mercedes','Pete',30),
+    #    (10,'BMW','Max',29),
+    #    (11,'Audi','Pete',21),
+    #    (12,'BMW','Max',18),
+    #    (13,'Audi','Pete',19),
+    #    (14,'BMW','Max',28),
+    #    (15,'BMW','Max',35)]
 
-    heads = ['id', 'model', 'owner', 'price']
-    table = ttk.Treeview(frame_add_table, show ='headings',selectmode='extended')
-    table['columns'] = heads
-    for header in heads:
-        table.heading(header,text=header,anchor='center')
-        table.column(header,anchor='center',stretch=False, width=int(width_frame/len(heads)))
-    for row in lst:
-        table.insert('',tk.END, values=row)
-    scroll_pane = tk.Scrollbar(frame_add_table,orient='horizontal', command=table.xview)
-    scroll_pane.pack(side=tk.BOTTOM, fill=tk.X)
+    # heads = ['id', 'model', 'owner', 'price']
+    # table = ttk.Treeview(frame_add_table, show ='headings',selectmode='extended')
+    # table['columns'] = heads
+    # for header in heads:
+    #     table.heading(header,text=header,anchor='center')
+    #     table.column(header,anchor='center',stretch=False, width=int(width_frame/len(heads)))
+    # for row in lst:
+    #     table.insert('',tk.END, values=row)
+    # scroll_pane = tk.Scrollbar(frame_add_table,orient='horizontal', command=table.xview)
+    # scroll_pane.pack(side=tk.BOTTOM, fill=tk.X)
 
-    scroll_pane_1 = tk.Scrollbar(frame_add_table,orient='vertical', command=table.yview)
-    scroll_pane_1.pack(side=tk.RIGHT, fill=tk.Y)
+    # scroll_pane_1 = tk.Scrollbar(frame_add_table,orient='vertical', command=table.yview)
+    # scroll_pane_1.pack(side=tk.RIGHT, fill=tk.Y)
 
-    table.configure(xscrollcommand=scroll_pane.set, yscrollcommand=scroll_pane_1.set)
-    table.pack(fill='x')
+    # table.configure(xscrollcommand=scroll_pane.set, yscrollcommand=scroll_pane_1.set)
+    # table.pack(fill='x')
 
 
 
