@@ -1,15 +1,18 @@
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 
 class Win_Table():
     def __init__(self,window):
         self.Label_1 = tk.Label(window,text='Ссылка',font=('Arial',14,'bold')).grid(row=0,column=0,stick='w')
         self.entry_1 = tk.Entry(window)
         self.button_1 = tk.Button(window,text='Upload',command=lambda:[self.__table(),self.__combobox()])
-
         self.entry_1.grid(row=0,column=1)
         self.button_1.grid(row=1,column=0)
+
+        self.flag = 0
 
         # self.button_1.bind("<Button-1>",self.__table)
 
@@ -30,7 +33,7 @@ class Win_Table():
         self.frame_add_chart.pack_propagate(0)
 
         self.heads = []
-        self.plots = ['Line graph','bar chart', 'Scatterplot']
+        self.plots = ['Line graph','Bar chart', 'Scatterplot']
 
     def hide_table_frame(self):          # очищает страницу перед записью новых виджетов
         for widget in self.frame_add_table.winfo_children():
@@ -40,20 +43,36 @@ class Win_Table():
         for widget in self.frame_add_combobox.winfo_children():
             widget.destroy()
 
+    def hide_chart_frame(self):          # очищает страницу перед записью новых виджетов
+        for widget in self.frame_add_chart.winfo_children():
+            widget.destroy()
+
+
+    def check_label(self, head):
+        for i in range(len(self.heads)):
+            if head == self.heads[i]:
+                x = i
+        return x
+
+
+
+
     def __table(self):
         self.hide_table_frame()
         self.heads = []
         txt = self.entry_1.get()
         df = pd.read_csv(txt)
+        self.df_values = df.values
+        
         for col in df.columns:
             self.heads.append(col)
-
+        
         table = ttk.Treeview(self.frame_add_table, show ='headings',height=self.height_frame)
         table['columns'] = self.heads
         for header in self.heads:
             table.heading(header,text=header,anchor='center')
             table.column(header,anchor='center',stretch=False)
-        for row in df.values:
+        for row in self.df_values:
             row = tuple(row)
             table.insert('',tk.END, values=row)
 
@@ -69,27 +88,58 @@ class Win_Table():
         self.hide_combobox_frame()
         self.frame_add_combobox.config(highlightbackground="grey", highlightthickness=1)
         label_1 = tk.Label(self.frame_add_combobox,text='Значение x:',font=('Arial',10,'bold'))
-        combobox_1 = ttk.Combobox(self.frame_add_combobox,values=self.heads)
+        self.combobox_1 = ttk.Combobox(self.frame_add_combobox,values=self.heads)
         label_2 = tk.Label(self.frame_add_combobox,text='Значение y:',font=('Arial',10,'bold'))
-        combobox_2 = ttk.Combobox(self.frame_add_combobox,values=self.heads)
+        self.combobox_2 = ttk.Combobox(self.frame_add_combobox,values=self.heads)
         label_3 = tk.Label(self.frame_add_combobox,text='Выбор графика:',font=('Arial',10,'bold'))
-        combobox_3 = ttk.Combobox(self.frame_add_combobox,values=self.plots)
-        button_1 = tk.Button(self.frame_add_combobox,text='Ввод', command= self.__chart())
+        self.combobox_3 = ttk.Combobox(self.frame_add_combobox,values=self.plots)
+        button_1 = tk.Button(self.frame_add_combobox,text='Ввод', command=lambda: self.__chart())
+        # if self.flag == 1:
+        #     self.button_1.config(command=self.__chart())
+        # else:
+        #     self.flag = 1
 
         label_1.pack(pady=(20,0))
-        combobox_1.pack()
+        self.combobox_1.pack()
         label_2.pack(pady=(5,0))
-        combobox_2.pack()
+        self.combobox_2.pack()
         label_3.pack(pady=(5,0))
-        combobox_3.pack()
+        self.combobox_3.pack()
         button_1.pack(pady=(5,0))
         
     def __chart(self):
+        self.hide_chart_frame()
+        self.X = []
+        self.Y = []
+        txt_1 = self.combobox_1.get()
+        txt_2 = self.combobox_2.get()
+        txt_3 = self.combobox_3.get()
+
+        x_ind = self.check_label(txt_1) 
+        y_ind = self.check_label(txt_2)
         
 
+        for row in self.df_values:
+            row = tuple(row)
+            self.X.append(row[x_ind])
 
+        for row in self.df_values:
+            row = tuple(row)
+            self.Y.append(row[y_ind])
 
+        self.figure = Figure()
+        self.axes = self.figure.add_subplot(111)
+
+        canvas = FigureCanvasTkAgg(self.figure, self.frame_add_chart)
+        canvas.get_tk_widget().pack(fill=tk.BOTH)
+        if txt_3 == 'Line graph':
+            self.axes.plot(self.X,self.Y)
         
+        elif txt_3 == 'Scatterplot':
+            self.axes.scatter(self.X,self.Y)
+        
+        elif txt_3 == 'Bar chart':
+            self.axes.hist(self.X)
 
 
 
